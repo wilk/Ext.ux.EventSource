@@ -1,3 +1,23 @@
 {
-    
+  "name": "Ext.ux.EventSource",
+  "version": "0.0.0",
+  "author": "Vincenzo (Wilk) Ferrari <wilk3ert@gmail.com>",
+  "description": "HTML5 EventSource wrapper for ExtJS and Sencha Touch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wilk/Ext.ux.EventSource.git"
+  },
+  "engines": {
+    "node": ">=0.10.24"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "load-grunt-tasks": "~0.2.1",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-jshint": "~0.8.0",
+    "grunt-contrib-connect": "~0.6.0",
+    "grunt-express-server": "~0.4.11"
+  }
 }
