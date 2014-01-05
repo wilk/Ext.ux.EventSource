@@ -256,12 +256,11 @@ Ext.define ('Ext.ux.EventSource', {
     init: function () {
         var me = this;
 
-        if (typeof EventSource === 'undefined' || EventSource === null) throw 'EventSource: your browser does not support HTML5 EventSource.';
+        if (typeof EventSource === 'undefined' || EventSource === null) throw 'Ext.ux.EventSource: your browser does not support HTML5 EventSource.';
 
         me.es = new EventSource (me.getUrl ());
 
-        me.es.onopen = function (evt) {
-            console.log ('onopen:', evt);
+        me.es.onopen = function () {
             // Kills the auto reconnect task
             // It will reactivated at the next onclose event
             if (me.autoReconnectTask) {
@@ -276,8 +275,7 @@ Ext.define ('Ext.ux.EventSource', {
             me.fireEvent ('error', me, error);
         };
 
-        me.es.onclose = function (evt) {
-            console.log ('onclose:', evt);
+        me.es.onclose = function () {
             me.fireEvent ('close', me);
 
             // Setups the auto reconnect task, just one
