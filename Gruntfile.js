@@ -13,12 +13,11 @@ module.exports = function (grunt) {
                 node: true ,
                 eqeqeq: true ,
                 undef: true ,
-                unused: true ,
                 eqnull: true ,
                 browser: true
             } ,
             dist: {
-                src: ['ux/EventSource.js', 'test/*.js']
+                src: ['ux/EventSource.js', 'demo/*.js']
             }
         } ,
         uglify: {
@@ -29,14 +28,14 @@ module.exports = function (grunt) {
         } ,
         watch: {
             dist: {
-                files: ['ux/EventSource.js', 'test/*.js', 'Gruntfile.js'] ,
+                files: ['ux/EventSource.js', 'demo/*.js', 'Gruntfile.js'] ,
                 tasks: ['jshint']
             }
         } ,
         express: {
             livereload: {
                 options: {
-                    script: 'test/app.js'
+                    script: 'demo/app.js'
                 }
             }
         } ,
@@ -47,7 +46,7 @@ module.exports = function (grunt) {
             } ,
             livereload: {
                 options: {
-                    open: 'http://localhost:9000/test/index.html'
+                    open: 'http://localhost:9000/demo/index.html'
                 }
             }
         }
