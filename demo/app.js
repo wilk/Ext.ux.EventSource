@@ -22,8 +22,8 @@ var express = require ('express') ,
 
         if (_.isString (obj)) msg = 'data:' + obj + "\n";
         else if (_.isObject (obj) && !_.isUndefined (obj) && !_.isNull (obj)) {
-            if (!_.isUndefined (obj.event) && !_.isNull (obj.event)) msg += 'event:' + obj.event + "\n";
             if (!_.isUndefined (obj.id) && !_.isNull (obj.id)) msg += 'id:' + obj.id + "\n";
+            if (!_.isUndefined (obj.event) && !_.isNull (obj.event)) msg += 'event:' + obj.event + "\n";
             if (_.isNumber (obj.retry)) msg += 'retry:' + obj.retry + "\n";
 
             if (!_.isUndefined (obj.data) && !_.isNull (obj.data)) {
@@ -66,16 +66,20 @@ app.get ('/event', function (req, res) {
 
     setInterval (function () {
         if (eventQueue.length > 0) {
-            var msg = {
-                id: new Date().toLocaleTimeString () ,
-                data: {
-                    msg: eventQueue.pop ()
-                }
-            };
+            var evt = eventQueue.pop () ,
+                msg = {
+                    id: new Date().toLocaleTimeString () ,
+                    event: 'foo' ,
+                    data: {
+                        date: evt.date ,
+                        msg: evt.message
+                    }
+                };
 
             res.write (obj2SSE (msg));
+            console.log (obj2SSE (msg));
         }
-    }, 1000);
+    }, 5000);
 });
 
 // Pure text communication
@@ -96,8 +100,11 @@ app.get ('/text', function (req, res) {
 
 setInterval (function () {
     var date = new Date().toLocaleTimeString ();
-    eventQueue.push ('[' + date + '] message');
-    textQueue.push ('[' + date + '] message');
+    eventQueue.push ({
+        message: 'a message' ,
+        date: date
+    });
+    textQueue.push ('[' + date + '] a message');
 }, 3000);
 
 console.log ('SSE server started on port: http://localhost:' + (process.env.PORT || 3000));
