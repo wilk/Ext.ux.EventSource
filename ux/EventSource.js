@@ -88,12 +88,7 @@ Ext.define ('Ext.ux.EventSource', {
         /**
          * @cfg {String} url (required) The URL to connect
          */
-        url: '' ,
-
-        /**
-         * @cfg {String} communicationType The type of communication. 'both' (default) for event-driven and pure-text communication, 'event' for only event-driven and 'text' for only pure-text.
-         */
-        communicationType: 'both'
+        url: ''
     } ,
 
     /**
@@ -251,36 +246,28 @@ Ext.define ('Ext.ux.EventSource', {
             me.fireEvent ('open', me);
             
 			for (var event in me.events) {
-				if (event !== 'open' && event !== 'error' && event !== 'close' && event !== 'message') {
-					me.es.addEventListener (event, function (message) {
-						// @todo: check if already exists the current listener
-						me.receiveMessage (message, event);
-					});
-				}
+				me.attachEvent (event);
 			}
         };
 
         me.es.onerror = function (error) {
             me.fireEvent ('error', me, error);
-        };
+        };/groups/nodejsitaly/
         
         me.es.onclose = function () {
         	me.fireEvent ('close', me);
         };
         
         me.es.onmessage = me.receiveMessage;
-
-        /*if (me.getCommunicationType () === 'both') {
-            me.es.onmessage = Ext.bind (me.receiveBothMessage, this);
-        }
-        else if (me.getCommunicationType () === 'event') {
-            me.es.onmessage = Ext.bind (me.receiveEventMessage, this);
-        }
-        else {
-            me.es.onmessage = Ext.bind (me.receiveTextMessage, this);
-        }*/
     } ,
     
+    /**
+     * @method receiveMessage
+     * It decodes the data sent from the server and it fires the appropriate event
+     * @param {EventSource} message The EventSource HTML5 object that contains every information
+     * @param {String} event (optional) The event sent from the server. Default: 'message'
+     * @private
+     */
     receiveMessage: function (message, event) {
     	var me = this ,
     		msg = Ext.JSON.decode (message.data, true);
@@ -290,73 +277,59 @@ Ext.define ('Ext.ux.EventSource', {
     	event = event || 'message';
     	me.fireEvent (event, me, msg);
     } ,
-
-    /*on: function (eventName, fn, scope, options) {
-        var me = this;
-        
-        me.es.addEventListener (eventName, fn);
-        me.callSuper (arguments);
-    } ,*/
-
-    /**
-     * @method receiveBothMessage
-     * It catches every event-driven and pure text messages incoming from the server
-     * @param {Object} message Message incoming from the server
-     * @private
-     */
-    receiveBothMessage: function (message) {
-        var me = this ,
-            msg = '';
-
-        // @todo: change try/catch flow into a more linear check
-        try {
-            // message.data : JSON encoded message
-            msg = Ext.JSON.decode (message.data);
-        }
-        catch (err) {
-            if (Ext.isString (message.data)) msg = message.data;
-        }
-
-        if (!Ext.isEmpty (message.event)) me.fireEvent (message.event, me, msg);
-        // Message event is always sent
-        me.fireEvent ('message', me, msg);
+    
+    attachEvent: function (event) {
+    	var me = this;
+    	
+    	if (!me.hasListener (event)) {
+			me.es.addEventListener (event, function (message) {
+				me.receiveMessage (message, event);
+			});
+		}
     } ,
-
-    /**
-     * @method receiveEventMessage
-     * It catches every event-driven messages incoming from the server
-     * @param {Object} message Message incoming from the server
-     * @private
-     */
-    receiveEventMessage: function (message) {
-        var me = this;
-
-        try {
-            var msg = Ext.JSON.decode (message.data);
-            if (!Ext.isEmpty (message.event)) me.fireEvent (message.event, me, msg);
-            me.fireEvent ('message', me, msg);
-        }
-        catch (err) {
-            Ext.Error.raise (err);
-        }
+    
+    detachEvent: function (event) {
+    	var me = this;
+    	
+    	if (me.hasListener (event)) {
+    		// @todo: this could be a bug. There's no function given from the user associated at the EventSource object
+			me.es.removeEventListener (event, function (message) {
+				me.receiveMessage (message, event);
+			});
+		}
     } ,
+    
+    addListener: function (event, fn, scope, options) {
+    	var me = this;
 
-    /**
-     * @method receiveTextMessage
-     * It catches every pure text messages incoming from the server
-     * @param {Object} message Message incoming from the server
-     * @private
-     */
-    receiveTextMessage: function (message) {
-        var me = this;
+		if (!Ext.isEmpty (me.es)) {
+			if (typeof event === 'string') {
+				me.attachEvent (event);
+			}
+			else {
+				for (var eventName in event) {
+					me.attachEvent (eventName);
+				}
+			}
+		}
 
-        try {
-            me.fireEvent (message.data, me, message.data);
-            // Message event is always sent
-            me.fireEvent ('message', me, message.data);
-        }
-        catch (err) {
-            Ext.Error.raise (err);
-        }
-    }
+		me.mixins.observable.addListener.apply (me, arguments);
+    } ,
+    
+	removeListener: function (event, fn, scope, options) {
+    	var me = this;
+
+		if (!Ext.isEmpty (me.es)) {
+			if (typeof event === 'string') {
+				me.detachEvent (event);
+			}
+			else {
+				for (var eventName in event) {
+					me.detachEvent (eventName);
+				}
+			}
+		}
+
+		me.mixins.observable.removeListener.apply (me, arguments);
+	}
 });
