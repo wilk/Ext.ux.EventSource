@@ -93,17 +93,7 @@ Ext.define ('Ext.ux.EventSource', {
         /**
          * @cfg {String} communicationType The type of communication. 'both' (default) for event-driven and pure-text communication, 'event' for only event-driven and 'text' for only pure-text.
          */
-        communicationType: 'both' ,
-
-        /**
-         * @cfg {Boolean} autoReconnect If the connection is closed by the server, it tries to re-connect again. The execution interval time of this operation is specified in autoReconnectInterval
-         */
-        autoReconnect: true ,
-
-        /**
-         * @cfg {Int} autoReconnectInterval Execution time slice of the autoReconnect operation, specified in milliseconds.
-         */
-        autoReconnectInterval: 5000
+        communicationType: 'both'
     } ,
 
     /**
@@ -239,11 +229,8 @@ Ext.define ('Ext.ux.EventSource', {
     close: function () {
         var me = this;
 
-        if (me.autoReconnectTask) {
-            Ext.TaskManager.stop (me.autoReconnectTask);
-            delete me.autoReconnectTask;
-        }
         me.es.close ();
+        me.fireEvent ('close', me);
 
         return me;
     } ,
@@ -259,40 +246,31 @@ Ext.define ('Ext.ux.EventSource', {
         if (typeof EventSource === 'undefined' || EventSource === null) throw 'Ext.ux.EventSource: your browser does not support HTML5 EventSource.';
 
         me.es = new EventSource (me.getUrl ());
-
+		
         me.es.onopen = function () {
-            // Kills the auto reconnect task
-            // It will reactivated at the next onclose event
-            if (me.autoReconnectTask) {
-                Ext.TaskManager.stop (me.autoReconnectTask);
-                delete me.autoReconnectTask;
-            }
-
             me.fireEvent ('open', me);
+            
+			for (var event in me.events) {
+				if (event !== 'open' && event !== 'error' && event !== 'close' && event !== 'message') {
+					me.es.addEventListener (event, function (message) {
+						// @todo: check if already exists the current listener
+						me.receiveMessage (message, event);
+					});
+				}
+			}
         };
 
         me.es.onerror = function (error) {
             me.fireEvent ('error', me, error);
         };
-
+        
         me.es.onclose = function () {
-            me.fireEvent ('close', me);
-
-            // Setups the auto reconnect task, just one
-            if (me.getAutoReconnect () && (typeof me.autoReconnectTask === 'undefined')) {
-                me.autoReconnectTask = Ext.TaskManager.start ({
-                    run: function () {
-                        // It reconnects only if it's disconnected
-                        if (me.getStatus () === me.CLOSED) {
-                            me.init ();
-                        }
-                    } ,
-                    interval: me.getAutoReconnectInterval ()
-                });
-            }
+        	me.fireEvent ('close', me);
         };
+        
+        me.es.onmessage = me.receiveMessage;
 
-        if (me.getCommunicationType () === 'both') {
+        /*if (me.getCommunicationType () === 'both') {
             me.es.onmessage = Ext.bind (me.receiveBothMessage, this);
         }
         else if (me.getCommunicationType () === 'event') {
@@ -300,8 +278,25 @@ Ext.define ('Ext.ux.EventSource', {
         }
         else {
             me.es.onmessage = Ext.bind (me.receiveTextMessage, this);
-        }
+        }*/
     } ,
+    
+    receiveMessage: function (message, event) {
+    	var me = this ,
+    		msg = Ext.JSON.decode (message.data, true);
+    	
+    	if (Ext.isEmpty (msg)) msg = message.data;
+    	
+    	event = event || 'message';
+    	me.fireEvent (event, me, msg);
+    } ,
+
+    /*on: function (eventName, fn, scope, options) {
+        var me = this;
+        
+        me.es.addEventListener (eventName, fn);
+        me.callSuper (arguments);
+    } ,*/
 
     /**
      * @method receiveBothMessage
