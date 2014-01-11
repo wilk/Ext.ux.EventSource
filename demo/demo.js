@@ -272,7 +272,7 @@ Ext.onReady (function () {
                                     btn.hide ();
                                     btn.up('toolbar').down('button[name=close]').show ();
 
-                                    esText = Ext.create ('Ext.ux.EventSource', {
+                                    esEvent = Ext.create ('Ext.ux.EventSource', {
                                         url: 'http://localhost:3000/event' ,
                                         listeners: {
                                             open: function (es) {
@@ -283,11 +283,12 @@ Ext.onReady (function () {
                                             } ,
                                             error: function (es, error) {
                                                 Ext.Error.raise (error);
-                                            } ,
-                                            message: function (es, message) {
-                                                logEvent.dom.innerHTML += '{msg:' + message.msg + "}<br />";
                                             }
                                         }
+                                    });
+
+                                    esEvent.on ('foo', function (es, message) {
+                                        logEvent.dom.innerHTML += 'event: foo' + ' - {date:' + message.date + ', msg:' + message.msg + "}<br />";
                                     });
                                 }
                             }
@@ -297,7 +298,7 @@ Ext.onReady (function () {
                             hidden: true ,
                             listeners: {
                                 click: function (btn) {
-                                    esText.close ();
+                                    esEvent.close ();
                                     btn.hide ();
                                     btn.up('toolbar').down('button[name=connect]').show ();
                                 }
