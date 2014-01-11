@@ -44,7 +44,7 @@
  *
  *     // A 'stop' event is sent from the server
  *     // 'data' has 'cmd' and 'msg' fields
- *     eventsource.on ('stop', function (data) {
+ *     eventsource.on ('stop', function (es, data) {
  *       console.log ('Command: ' + data.cmd);
  *       console.log ('Message: ' + data.msg);
  *     });
@@ -69,7 +69,7 @@
  *
  *     // A 'stop' event is sent from the server
  *     // 'data' has 'cmd' and 'msg' fields
- *     eventsource.on ('stop', function (data) {
+ *     eventsource.on ('stop', function (es, data) {
  *       console.log ('Command: ' + data.cmd);
  *       console.log ('Message: ' + data.msg);
  *     });
@@ -245,6 +245,7 @@ Ext.define ('Ext.ux.EventSource', {
         me.es.onopen = function () {
             me.fireEvent ('open', me);
             
+            // Attaches a queue of events
 			for (var event in me.events) {
 				me.attachEvent (event);
 			}
@@ -252,7 +253,7 @@ Ext.define ('Ext.ux.EventSource', {
 
         me.es.onerror = function (error) {
             me.fireEvent ('error', me, error);
-        };/groups/nodejsitaly/
+        };
         
         me.es.onclose = function () {
         	me.fireEvent ('close', me);
@@ -278,6 +279,12 @@ Ext.define ('Ext.ux.EventSource', {
     	me.fireEvent (event, me, msg);
     } ,
     
+    /**
+     * @method attachEvent
+     * It attaches the given event to the EventSource object. Actually, this is a proxy to make EventSource object observable by ExtJS
+     * @param {String} event The event to listen to
+     * @private
+     */
     attachEvent: function (event) {
     	var me = this;
     	
@@ -288,6 +295,12 @@ Ext.define ('Ext.ux.EventSource', {
 		}
     } ,
     
+    /**
+     * @method detachEvent
+     * It detaches the given event to the EventSource object.
+     * @param {String} event The event to remove
+     * @private
+     */
     detachEvent: function (event) {
     	var me = this;
     	
@@ -299,6 +312,11 @@ Ext.define ('Ext.ux.EventSource', {
 		}
     } ,
     
+    /**
+     * @method addListener
+     * Ext.util.Observable.addListener method overridden to make the EventSource internal object observable.
+     * See the original docs for the parameters.
+     */
     addListener: function (event, fn, scope, options) {
     	var me = this;
 
@@ -316,6 +334,11 @@ Ext.define ('Ext.ux.EventSource', {
 		me.mixins.observable.addListener.apply (me, arguments);
     } ,
     
+    /**
+     * @method removeListener
+     * Ext.util.Observable.removeListener method overridden to make the EventSource internal object observable.
+     * See the original docs for the parameters.
+     */
 	removeListener: function (event, fn, scope, options) {
     	var me = this;
 
