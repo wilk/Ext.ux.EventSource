@@ -52,6 +52,6 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.registerTask ('server', ['jshint', 'express', 'connect:livereload', 'watch']);
+    grunt.registerTask ('server', ['express', 'connect:livereload', 'watch']);
     grunt.registerTask ('build', ['uglify']);
 };
