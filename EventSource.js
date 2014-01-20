@@ -245,7 +245,7 @@ Ext.define ('Ext.ux.EventSource', {
         me.es.onopen = function () {
             me.fireEvent ('open', me);
             
-            // Attaches a queue of events
+            // Attaches those events that weren't attached before
 			for (var event in me.events) {
 				me.attachEvent (event);
 			}
@@ -259,7 +259,7 @@ Ext.define ('Ext.ux.EventSource', {
         	me.fireEvent ('close', me);
         };
         
-        me.es.onmessage = me.receiveMessage;
+        me.es.onmessage = Ext.bind (me.receiveMessage, this);
     } ,
     
     /**
