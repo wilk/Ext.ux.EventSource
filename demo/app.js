@@ -77,6 +77,7 @@ app.get ('/event', function (req, res) {
                 };
 
             res.write (obj2SSE (msg));
+            console.log ('EVENT');
             console.log (obj2SSE (msg));
         }
     }, 5000);
@@ -94,6 +95,8 @@ app.get ('/text', function (req, res) {
             };
 
             res.write (obj2SSE (msg));
+            console.log ('TEXT');
+            console.log (obj2SSE (msg));
         }
     }, 1000);
 });
