@@ -14,7 +14,8 @@ module.exports = function (grunt) {
                 eqeqeq: true ,
                 undef: true ,
                 eqnull: true ,
-                browser: true
+                browser: true ,
+                smarttabs: true
             } ,
             dist: {
                 src: ['ux/EventSource.js', 'demo/*.js']
@@ -22,13 +23,13 @@ module.exports = function (grunt) {
         } ,
         uglify: {
             dist: {
-                src: ['ux/EventSource.js'] ,
-                dest: 'build/EventSource.min.js'
+                src: ['EventSource.js'] ,
+                dest: 'EventSource.min.js'
             }
         } ,
         watch: {
             dist: {
-                files: ['ux/EventSource.js', 'demo/*.js', 'Gruntfile.js'] ,
+                files: ['EventSource.js', 'demo/*.js', 'Gruntfile.js'] ,
                 tasks: ['jshint']
             }
         } ,
@@ -53,5 +54,5 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask ('server', ['express', 'connect:livereload', 'watch']);
-    grunt.registerTask ('build', ['uglify']);
+    grunt.registerTask ('build', ['jshint', 'uglify']);
 };
