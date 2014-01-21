@@ -1,5 +1,4 @@
 # Ext.ux.EventSource
-==================
 
 Wrapper for EventSource HTML5 object to manage SSE (Server Sent Event) with ExtJS and Sencha Touch.
 
@@ -30,7 +29,6 @@ Ext.Loader.setConfig ({
 Ext.require (['Ext.ux.EventSource']);
 ```
 
-
 ## Usage
 Load `Ext.ux.EventSource` via `Ext.require`:
 
@@ -46,13 +44,13 @@ Now, you are ready to use them in your code as follows:
 
 ```javascript
 // Creating a new instance of Ext.ux.EventSource
-var es = Ext.create ('Ext.ux.EventSource', {
+var eventsource = Ext.create ('Ext.ux.EventSource', {
 	url: 'your_url:your_port'
 });
 
 // Or
 
-var es = Ext.create ('Ext.ux.EventSource', 'your_url:your_port');
+var eventsource = Ext.create ('Ext.ux.EventSource', 'your_url:your_port');
 ```
 
 ## Communications supported
@@ -129,6 +127,23 @@ eventsource.on ('stop', function (data) {
 	console.log ('Message: ' + data.msg);
 });
 ```
+
+## Run the demo
+To start the demo, you need [**npm**](https://npmjs.org/), so install it.
+
+Then, launch the following command:
+
+```bash
+$ npm install
+```
+
+And then, start the demo:
+
+```bash
+$ grunt server
+```
+
+A page will appear on your browser at *http://localhost:9000/demo/index.html*
 
 ## Documentation
 You can build the documentation (like ExtJS Docs) with [**jsduck**](https://github.com/senchalabs/jsduck):
