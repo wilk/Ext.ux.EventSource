@@ -2,6 +2,17 @@
 
 Wrapper for EventSource HTML5 object to manage SSE (Server Sent Event) with ExtJS and Sencha Touch.
 
+## Introduction
+What is HTML5 EventSource object?
+A new way to do push notifications from the server to the client.
+Here's the specs about EventSource: 
+
+  - [**API**](https://developer.mozilla.org/en-US/docs/Web/API/EventSource)
+  - [**Interface**](http://www.w3.org/TR/eventsource/#the-eventsource-interface)
+  - [**SSE**](https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events)
+
+And now you can use it with ease with ExtJS and Sencha Touch: discover **Ext.ux.EventSource** wrapper!
+
 ## Install via Bower
 First of all, install [**Bower**](http://bower.io/).
 
